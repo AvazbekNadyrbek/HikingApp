@@ -38,6 +38,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/locations").permitAll()
                         .requestMatchers("/api/locations/{id}").permitAll()
+                        // Swagger UI — публичный
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        // остальное как было...
+                        .requestMatchers("/api/auth/**").permitAll()
                         // Только админ может добавлять/редактировать места
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // Всё остальное — только авторизованные
