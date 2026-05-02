@@ -3,6 +3,7 @@ package com.berchtesgaden.explorer.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -34,18 +35,11 @@ public class SecurityConfig {
 
                 // 3. Настраиваем кто что может делать
                 .authorizeHttpRequests(auth -> auth
-                        // Публичные endpoints — без токена
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/locations").permitAll()
-                        .requestMatchers("/api/locations/{id}").permitAll()
-                        // Swagger UI — публичный
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        // остальное как было...
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Только админ может добавлять/редактировать места
+                        .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // Всё остальное — только авторизованные
                         .anyRequest().authenticated()
                 )
 
