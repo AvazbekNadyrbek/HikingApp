@@ -89,11 +89,12 @@ public class GlobalExceptionHandler {
     // 500 — всё остальное
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        ex.printStackTrace(); // ← добавь это
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(
                         500,
-                        "Something went wrong",
+                        ex.getMessage(), // ← временно показываем реальную ошибку
                         LocalDateTime.now()
                 ));
     }

@@ -6,6 +6,7 @@ import com.berchtesgaden.explorer.domain.LocationCategory;
 import com.berchtesgaden.explorer.repository.LocationRepository;
 import com.berchtesgaden.explorer.service.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,17 @@ public class LocationController {
 
     // Публичный — все туристы видят
     @GetMapping
-    public ResponseEntity<List<Location>> getAll() {
-        return ResponseEntity.ok(locationService.findAll());
+    public ResponseEntity<Page<Location>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(locationService.findAll(page, size));
+    }
+
+    // Поиск
+    @GetMapping("/search")
+    public ResponseEntity<List<Location>> search(
+            @RequestParam String q) {
+        return ResponseEntity.ok(locationService.search(q));
     }
 
     @GetMapping("/{id}")

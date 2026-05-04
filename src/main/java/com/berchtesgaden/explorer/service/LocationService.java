@@ -5,6 +5,10 @@ import com.berchtesgaden.explorer.domain.LocationCategory;
 import com.berchtesgaden.explorer.exception.LocationNotFoundException;
 import com.berchtesgaden.explorer.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +19,19 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-    // return all active places
-    public List<Location> findAll() {
-        return locationRepository.findAll();
+    // Все активные места с пагинацией
+    public Page<Location> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(
+                page,               // номер страницы (0, 1, 2...)
+                size,               // количество на странице
+                Sort.by("name").ascending() // сортировка по имени
+        );
+        return locationRepository.findByIsActiveTrue(pageable);
+    }
+
+    // Поиск
+    public List<Location> search(String query) {
+        return locationRepository.search(query);
     }
 
     // Find by one ID
