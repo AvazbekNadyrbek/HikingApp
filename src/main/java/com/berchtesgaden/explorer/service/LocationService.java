@@ -2,6 +2,7 @@ package com.berchtesgaden.explorer.service;
 
 import com.berchtesgaden.explorer.domain.Location;
 import com.berchtesgaden.explorer.domain.LocationCategory;
+import com.berchtesgaden.explorer.exception.LocationNotFoundException;
 import com.berchtesgaden.explorer.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ public class LocationService {
 
     // Find by one ID
     public Location findById(Long id) {
-        return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found:" + id));
+        return locationRepository.findById(id)
+                .orElseThrow(() -> new LocationNotFoundException(id));
     }
 
     // find one by Category

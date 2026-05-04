@@ -4,12 +4,12 @@ import com.berchtesgaden.explorer.domain.Role;
 import com.berchtesgaden.explorer.domain.User;
 import com.berchtesgaden.explorer.dto.LoginRequest;
 import com.berchtesgaden.explorer.dto.RegisterRequest;
+import com.berchtesgaden.explorer.exception.UserAlreadyExistsException;
 import com.berchtesgaden.explorer.repository.UserRepository;
 import com.berchtesgaden.explorer.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +26,13 @@ public class AuthService {
 
         // 1. Проверяем что username не занят
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException("Username", request.getUsername());
         }
 
         // 2.Checking that email not occupied
 
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistsException("Email", request.getEmail());
         }
 
         // 3.Creating user
