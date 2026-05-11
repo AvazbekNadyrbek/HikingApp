@@ -45,4 +45,21 @@ class LocationValidatorTest {
         // THEN
         assertThat(result).isFalse();
     }
+
+    @Test
+    @DisplayName("Checking for null name")
+    void isNameEquealNull() {
+
+        Location location = Location.builder()
+                .name(null)
+                .latitude(47.0)
+                .longitude(12.0)
+                .description("Konnigsee")
+                .build();
+
+        boolean result = validator.isReadyForPublication(location);
+
+        assertThat(result).isFalse();
+
+    }
 }
