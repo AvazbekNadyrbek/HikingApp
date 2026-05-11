@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: explorer
+  profiles:
+    active: dev
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+
+logging:
+  level:
+    org:
+      springframework: ERROR

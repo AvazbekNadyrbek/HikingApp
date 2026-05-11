@@ -1,0 +1,12 @@
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    url: ${DB_DATASOURCE}
+
