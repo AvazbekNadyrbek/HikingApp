@@ -7,6 +7,8 @@ import com.berchtesgaden.explorer.security.JwtService;
 import com.berchtesgaden.explorer.security.RateLimitFilter;
 import com.berchtesgaden.explorer.security.SecurityConfig;
 import com.berchtesgaden.explorer.service.LocationService;
+import jakarta.servlet.FilterChain;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,6 +46,21 @@ class LocationControllerTest {
 
     @MockitoBean
     private RateLimitFilter rateLimitFilter; // Заглушка для лимитера
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // Мок фильтров должен пропускать запрос дальше по цепочке,
+        // иначе запрос никогда не доходит до контроллера
+        doAnswer(inv -> {
+            inv.getArgument(2, FilterChain.class).doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(jwtFilter).doFilter(any(), any(), any());
+
+        doAnswer(inv -> {
+            inv.getArgument(2, FilterChain.class).doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(rateLimitFilter).doFilter(any(), any(), any());
+    }
 
     @Test
     @DisplayName("Должен возвращать список локаций с пагинацией")
