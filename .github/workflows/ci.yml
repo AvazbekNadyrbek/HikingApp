@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # PostgreSQL service container — запускается рядом с твоим приложением
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: explorer_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven          # кэширует зависимости — ускоряет сборку
+
+      - name: Build and test
+        run: mvn clean verify
+        env:
+          DB_DATASOURCE: jdbc:postgresql://localhost:5432/explorer_test
+          DB_USERNAME: test
+          DB_PASSWORD: test
+          JWT_SECRET: ci-secret-key-min-32-characters-long
