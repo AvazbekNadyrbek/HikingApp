@@ -24,7 +24,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     // Поиск по названию и описанию
     @Query("SELECT l FROM Location l WHERE " +
-            "LOWER(l.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(l.name) LIKE LOWER(CONCAT('%фв', :query, '%')) OR " +
             "LOWER(l.description) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Location> search(@Param("query") String query);
 }

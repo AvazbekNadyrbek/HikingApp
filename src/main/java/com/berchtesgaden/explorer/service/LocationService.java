@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class LocationService {
     private final LocationRepository locationRepository;
 
     // Все активные места с пагинацией
+    @Transactional(readOnly = true)
     public Page<Location> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(
                 page,               // номер страницы (0, 1, 2...)
@@ -49,12 +51,22 @@ public class LocationService {
         return locationRepository.findByIsFeaturedTrue();
     }
 
+    @Transactional
     public Location create(Location location) {
         location.setIsActive(true);
         return locationRepository.save(location);
     }
 
+    @Transactional
+    public void deactivate(Long id) {
+        Location location = locationRepository.findById(id)
+                .orElseThrow(() -> new LocationNotFoundException(id));
+        location.setIsActive(false);
+        // save() не нужен — Hibernate видит изменение сам (dirty checking)
+    }
+
     // Обновить место (только для ADMIN)
+    @Transactional
     public Location update(Long id, Location updated) {
         Location existing = findById(id);
         existing.setName(updated.getName());
@@ -71,6 +83,7 @@ public class LocationService {
     }
 
     // Удалить место (только для ADMIN)
+    @Transactional
     public void delete(Long id) {
         locationRepository.deleteById(id);
     }
